@@ -24,7 +24,6 @@ unset LD_LIBRARY_PATH
 
 /opt/llama.cpp/build/bin/llama-server \
     -m "$MODEL_PATH" \
-    --alias "qwen3.8-uncensored" \
     --host 0.0.0.0 \
     --port 8080 \
     --ctx-size 32768 \
