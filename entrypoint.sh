@@ -26,10 +26,10 @@ unset LD_LIBRARY_PATH
     -m "$MODEL_PATH" \
     --host 0.0.0.0 \
     --port 8080 \
-    --ctx-size 32768 \
+    --ctx-size 65536 \
     --n-gpu-layers 99 \
     --flash-attn on \
-    --chat-template chatml \
+    --jinja \
     --embedding \
     --pooling last \
     --api-key sk-local &
@@ -66,6 +66,8 @@ openclaw config set memory.search.model "${MODEL_ID}"
 openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:8080/v1/"
 openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
+
+openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
 
 # 4. Initialize and start OpenClaw
 echo "Starting OpenClaw..."
