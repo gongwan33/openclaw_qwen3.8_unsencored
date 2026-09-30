@@ -29,17 +29,43 @@ unset LD_LIBRARY_PATH
     --ctx-size 32768 \
     --n-gpu-layers 99 \
     --flash-attn on \
-    --chat-template qwen2.5 \
+    --chat-template chatml \
+    --embedding \
+    --pooling last \
     --api-key sk-local &
 
-# Wait for the model to load into VRAM
-echo "Waiting 15 seconds for LLM server to initialize..."
-sleep 15
+# 2. Wait for the model to load into VRAM dynamically
+echo "Waiting for LLM server to initialize (this may take 30+ seconds)..."
+while ! curl -s -H "Authorization: Bearer sk-local" http://127.0.0.1:8080/v1/models | grep -q "id"; do
+    sleep 2
+done
+echo "LLM server is fully loaded and ready!"
 
-# 3. Configure OpenClaw environment variables to route to the local server
+# Resolve the model id the server actually advertises
+MODEL_ID=$(curl -s -H "Authorization: Bearer sk-local" http://127.0.0.1:8080/v1/models \
+  | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+if [ -z "$MODEL_ID" ]; then
+    MODEL_ID="$MODEL_FILE"   # fallback
+fi
+echo "Detected model id: $MODEL_ID"
+
+# 3. Point OpenClaw chat + memory at the local server
 export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
-export OPENAI_API_KEY="sk-local"  # llama.cpp accepts any string as a key
-export OPENCLAW_MODEL="local"
+export OPENAI_API_KEY="sk-local"
+
+echo "Configuring OpenClaw for local OpenAI-compatible server..."
+
+# Chat provider
+openclaw config set models.providers.openai.baseUrl "http://127.0.0.1:8080/v1"
+openclaw config set models.providers.openai.apiKey "sk-local"
+openclaw config set agents.defaults.model "openai/${MODEL_ID}"
+
+# Memory embeddings (Option A — same server)
+openclaw config set memory.search.provider openai-compatible
+openclaw config set memory.search.model "${MODEL_ID}"
+openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:8080/v1/"
+openclaw config set memory.search.remote.apiKey "sk-local"
+openclaw config set memory.search.fallback none
 
 # 4. Initialize and start OpenClaw
 echo "Starting OpenClaw..."
