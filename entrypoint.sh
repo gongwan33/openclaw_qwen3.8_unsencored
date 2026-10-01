@@ -72,6 +72,10 @@ openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
 openclaw config set agents.defaults.experimental.localModelLean true
 openclaw config set agents.defaults.contextTokens 65536
 
+openclaw config set models.providers.openai.models \
+  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":65536,\"contextTokens\":65536,\"maxTokens\":8192}]" \
+  --strict-json
+
 # 4. Initialize and start OpenClaw
 echo "Starting OpenClaw..."
 openclaw gateway run --allow-unconfigured --token "my-secure-password" 
