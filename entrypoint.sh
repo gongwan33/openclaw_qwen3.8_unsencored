@@ -27,6 +27,7 @@ unset LD_LIBRARY_PATH
     --host 0.0.0.0 \
     --port 8080 \
     --ctx-size 65536 \
+    --parallel 1 \
     --n-gpu-layers 99 \
     --flash-attn on \
     --jinja \
@@ -68,6 +69,8 @@ openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
 
 openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
+openclaw config set agents.defaults.experimental.localModelLean true
+openclaw config set agents.defaults.contextTokens 65536
 
 # 4. Initialize and start OpenClaw
 echo "Starting OpenClaw..."
