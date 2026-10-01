@@ -34,6 +34,7 @@ unset LD_LIBRARY_PATH
     --no-reasoning-preserve \
     --n-gpu-layers 99 \
     --flash-attn on \
+    --log-verbosity 4 \
     --jinja \
     --embedding \
     --pooling last \
