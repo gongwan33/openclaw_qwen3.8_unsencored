@@ -31,6 +31,7 @@ unset LD_LIBRARY_PATH
     --parallel 1 \
     --cache-type-k q8_0 \
     --cache-type-v q8_0 \
+    --no-reasoning-preserve \
     --n-gpu-layers 99 \
     --flash-attn on \
     --jinja \
