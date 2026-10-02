@@ -29,6 +29,8 @@ unset LD_LIBRARY_PATH
     --port 8080 \
     --ctx-size $CTX_SIZE \
     --parallel 1 \
+    --no-reasoning-preserve \
+    --reasoning-budget 4096 \
     --n-gpu-layers 99 \
     --flash-attn on \
     --log-verbosity 4 \
@@ -75,7 +77,7 @@ openclaw config set agents.defaults.experimental.localModelLean true
 openclaw config set agents.defaults.contextTokens $CTX_SIZE 
 
 openclaw config set models.providers.openai.models \
-  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":8192}]" \
+  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":16384}]" \
   --strict-json
 
 # 4. Initialize and start OpenClaw
