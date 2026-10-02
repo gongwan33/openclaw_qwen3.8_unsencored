@@ -7,7 +7,7 @@ HF_REPO="JonathanColetti/Qwen3.8-27B-Uncensored-GGUF"
 MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
-CTX_SIZE=131072
+CTX_SIZE=94208
 
 mkdir -p $MODEL_DIR
 
@@ -29,9 +29,6 @@ unset LD_LIBRARY_PATH
     --port 8080 \
     --ctx-size $CTX_SIZE \
     --parallel 1 \
-    --cache-type-k q8_0 \
-    --cache-type-v q8_0 \
-    --no-reasoning-preserve \
     --n-gpu-layers 99 \
     --flash-attn on \
     --log-verbosity 4 \
