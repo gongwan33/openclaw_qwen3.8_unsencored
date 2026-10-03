@@ -7,7 +7,9 @@ HF_REPO="JonathanColetti/Qwen3.8-27B-Uncensored-GGUF"
 MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
-CTX_SIZE=94208
+CTX_SIZE=65536
+MAX_OUT=4096
+REASON_BUDGET=512
 
 mkdir -p $MODEL_DIR
 
@@ -29,11 +31,11 @@ unset LD_LIBRARY_PATH
     --port 8080 \
     --ctx-size $CTX_SIZE \
     --parallel 1 \
+    --n-predict "$MAX_OUT" \
     --no-reasoning-preserve \
-    --reasoning-budget 4096 \
+    --reasoning-budget $REASON_BUDGET \
     --n-gpu-layers 99 \
     --flash-attn on \
-    --log-verbosity 4 \
     --jinja \
     --embedding \
     --pooling last \
@@ -77,7 +79,7 @@ openclaw config set agents.defaults.experimental.localModelLean true
 openclaw config set agents.defaults.contextTokens $CTX_SIZE 
 
 openclaw config set models.providers.openai.models \
-  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":16384}]" \
+  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":$MAX_OUT}]" \
   --strict-json
 
 # 4. Initialize and start OpenClaw
