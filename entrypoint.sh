@@ -8,7 +8,7 @@ MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536
-MAX_OUT=4096
+MAX_OUT=16384
 REASON_BUDGET=512
 
 mkdir -p $MODEL_DIR
@@ -67,6 +67,7 @@ openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790",
 openclaw config set models.providers.openai.baseUrl "http://127.0.0.1:8080/v1"
 openclaw config set models.providers.openai.apiKey "sk-local"
 openclaw config set agents.defaults.model "openai/${MODEL_ID}"
+openclaw config set agents.defaults.timeoutSeconds 1800
 
 # Memory embeddings (Option A — same server)
 openclaw config set memory.search.provider openai-compatible
