@@ -63,6 +63,7 @@ export OPENAI_API_KEY="sk-local"
 echo "Configuring OpenClaw for local OpenAI-compatible server..."
 
 # Chat provider
+openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790","http://localhost:18789"]'
 openclaw config set models.providers.openai.baseUrl "http://127.0.0.1:8080/v1"
 openclaw config set models.providers.openai.apiKey "sk-local"
 openclaw config set agents.defaults.model "openai/${MODEL_ID}"
