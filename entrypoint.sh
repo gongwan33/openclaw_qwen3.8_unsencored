@@ -123,8 +123,11 @@ openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
 
 openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
-openclaw config set agents.defaults.experimental.localModelLean true
+openclaw config set agents.defaults.experimental.localModelLean false 
 openclaw config set agents.defaults.contextTokens $CTX_SIZE 
+
+openclaw config set agents.defaults.compaction.mode safeguard
+openclaw config set agents.defaults.compaction.keepRecentTokens 12000
 
 openclaw config set models.providers.openai.models \
   "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":$MAX_OUT}]" \
