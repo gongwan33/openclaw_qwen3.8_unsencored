@@ -128,6 +128,7 @@ openclaw config set agents.defaults.contextTokens $CTX_SIZE
 
 openclaw config set agents.defaults.compaction.mode safeguard
 openclaw config set agents.defaults.compaction.keepRecentTokens 12000
+openclaw config set agents.defaults.compaction.notifyUser true
 
 openclaw config set models.providers.openai.models \
   "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":$MAX_OUT}]" \
