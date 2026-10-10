@@ -8,9 +8,9 @@ MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536    # 49152
-EFFECTIVE_CTX=32768          # when compaction should kick in
+EFFECTIVE_CTX=24576   #20480   #16384   #28672   #32768      # when compaction should kick in
 KEEP_RECENT=8192
-MAX_OUT=8192   #12288
+MAX_OUT=12288   #12288
 REASON_BUDGET=512
 
 # ============================================================
@@ -125,7 +125,7 @@ openclaw config set memory.search.fallback none
 openclaw config set agents.defaults.bootstrapTotalMaxChars 6000
 openclaw config set agents.defaults.experimental.localModelLean true 
 
-openclaw config set agents.defaults.compaction.mode safeguard
+# openclaw config set agents.defaults.compaction.mode safeguard
 openclaw config set agents.defaults.compaction.keepRecentTokens $KEEP_RECENT 
 openclaw config set agents.defaults.compaction.notifyUser true
 
