@@ -8,6 +8,8 @@ MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536
+EFFECTIVE_CTX=49152          # when compaction should kick in
+KEEP_RECENT=16000
 MAX_OUT=16384
 REASON_BUDGET=512
 
@@ -56,8 +58,6 @@ unset LD_LIBRARY_PATH
     --n-gpu-layers 99 \
     --flash-attn on \
     --jinja \
-    --embedding \
-    --pooling last \
     --api-key sk-local &
 
 # ------------------------------------------------------------
@@ -124,14 +124,16 @@ openclaw config set memory.search.fallback none
 
 openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
 openclaw config set agents.defaults.experimental.localModelLean false 
-openclaw config set agents.defaults.contextTokens $CTX_SIZE 
 
 openclaw config set agents.defaults.compaction.mode safeguard
-openclaw config set agents.defaults.compaction.keepRecentTokens 12000
+openclaw config set agents.defaults.compaction.keepRecentTokens $KEEP_RECENT 
 openclaw config set agents.defaults.compaction.notifyUser true
 
+openclaw config set agents.defaults.compaction.recentTurnsPreserve 6 || true
+openclaw config set agents.defaults.compaction.identifierPolicy strict || true
+
 openclaw config set models.providers.openai.models \
-  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$CTX_SIZE,\"maxTokens\":$MAX_OUT}]" \
+  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$EFFECTIVE_CTX,\"maxTokens\":$MAX_OUT}]" \
   --strict-json
 
 # 4. Initialize and start OpenClaw
