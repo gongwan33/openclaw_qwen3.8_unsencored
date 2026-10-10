@@ -9,7 +9,7 @@ MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536
 EFFECTIVE_CTX=49152          # when compaction should kick in
-KEEP_RECENT=10000
+KEEP_RECENT=12000
 MAX_OUT=16384
 REASON_BUDGET=512
 
@@ -128,8 +128,6 @@ openclaw config set agents.defaults.experimental.localModelLean true
 openclaw config set agents.defaults.compaction.mode safeguard
 openclaw config set agents.defaults.compaction.keepRecentTokens $KEEP_RECENT 
 openclaw config set agents.defaults.compaction.notifyUser true
-
-# openclaw config set agents.defaults.compaction.recentTurnsPreserve 6 || true
 
 openclaw config set models.providers.openai.models \
   "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$EFFECTIVE_CTX,\"maxTokens\":$MAX_OUT}]" \
