@@ -118,12 +118,12 @@ openclaw config set agents.defaults.timeoutSeconds 1800
 # Memory embeddings (Option A — same server)
 openclaw config set memory.search.provider openai-compatible
 openclaw config set memory.search.model "${EMB_MODEL_ID}"
-openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:${EMB_PORT}/v1/"
+openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:${EMB_PORT}/v1"
 openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
 
-openclaw config set agents.defaults.bootstrapTotalMaxChars 4000
-openclaw config set agents.defaults.experimental.localModelLean false 
+openclaw config set agents.defaults.bootstrapTotalMaxChars 6000
+openclaw config set agents.defaults.experimental.localModelLean true 
 
 openclaw config set agents.defaults.compaction.mode safeguard
 openclaw config set agents.defaults.compaction.keepRecentTokens $KEEP_RECENT 
