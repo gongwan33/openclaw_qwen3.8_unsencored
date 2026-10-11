@@ -9,7 +9,7 @@ MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536    # 49152
 EFFECTIVE_CTX=24576   #20480   #16384   #28672   #32768      # when compaction should kick in
-KEEP_RECENT=8192
+KEEP_RECENT=4096  #8192 #6144
 MAX_OUT=12288   #12288
 REASON_BUDGET=512
 
@@ -95,6 +95,10 @@ if [ -z "$MODEL_ID" ]; then
     MODEL_ID="$MODEL_FILE"   # fallback
 fi
 
+# Strip leading path junk if present
+MODEL_ID="${MODEL_ID#/models/}"
+MODEL_ID="${MODEL_ID##*/}"   # just the filename if needed
+
 EMB_MODEL_ID=$(curl -s -H "Authorization: Bearer sk-local" http://127.0.0.1:$EMB_PORT/v1/models \
   | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
 [ -z "$EMB_MODEL_ID" ] && EMB_MODEL_ID="$EMB_MODEL_FILE"
@@ -133,9 +137,10 @@ openclaw config set gateway.controlUi.sessionObserver false
 
 openclaw config set models.providers.openai.models \
   "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$EFFECTIVE_CTX,\"maxTokens\":$MAX_OUT}]" \
-  --strict-json
+  --strict-json --replace
 
 # 4. Initialize and start OpenClaw
+openclaw --version
 echo "Starting OpenClaw..."
 openclaw gateway run --allow-unconfigured --token "my-secure-password" 
 

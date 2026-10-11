@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     python3 \
     python3-pip \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
@@ -29,7 +29,7 @@ RUN git clone https://github.com/ggerganov/llama.cpp . \
     && cmake --build build --config Release -j$(nproc)
 
 # Install OpenClaw globally via npm
-RUN npm install -g openclaw clawhub
+RUN npm install -g openclaw@2026.10.1 clawhub
 
 # Set up the application directory
 WORKDIR /app
