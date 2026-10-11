@@ -8,7 +8,7 @@ MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536    # 49152
-EFFECTIVE_CTX=24576   #20480   #16384   #28672   #32768      # when compaction should kick in
+EFFECTIVE_CTX=32768   #20480   #16384   #28672   #32768      # when compaction should kick in
 KEEP_RECENT=8192  #4096  #8192 #6144
 MAX_OUT=12288   #12288
 REASON_BUDGET=512
@@ -57,7 +57,8 @@ unset LD_LIBRARY_PATH
     --reasoning-budget $REASON_BUDGET \
     --n-gpu-layers 99 \
     --flash-attn on \
-    --chat-template chatml \
+    --jinja \
+    --chat-template-file /models/qwen3.8-openclaw.jinja \
     --api-key sk-local &
 
 # ------------------------------------------------------------
@@ -133,15 +134,15 @@ if [ "$config_ok" != "1" ]; then
   exit 1
 fi
 
-# openclaw config set models.providers.local \
-#   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
-#   --strict-json --replace
-openclaw config set models.providers.openai \
+openclaw config set models.providers.local \
   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
   --strict-json --replace
+# openclaw config set models.providers.openai \
+#   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
+#   --strict-json --replace
 
 openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790","http://localhost:18789"]'
-openclaw config set agents.defaults.model "openai/${MODEL_ID}"
+openclaw config set agents.defaults.model "local/${MODEL_ID}"
 openclaw config set agents.defaults.timeoutSeconds 1800
 
 openclaw config set memory.search.provider openai-compatible
