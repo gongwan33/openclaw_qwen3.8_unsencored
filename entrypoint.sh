@@ -137,9 +137,6 @@ fi
 openclaw config set models.providers.local \
   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
   --strict-json --replace
-# openclaw config set models.providers.openai \
-#   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
-#   --strict-json --replace
 
 openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790","http://localhost:18789"]'
 openclaw config set agents.defaults.model "local/${MODEL_ID}"
