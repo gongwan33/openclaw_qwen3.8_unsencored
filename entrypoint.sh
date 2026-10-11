@@ -9,7 +9,7 @@ MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536    # 49152
 EFFECTIVE_CTX=24576   #20480   #16384   #28672   #32768      # when compaction should kick in
-KEEP_RECENT=4096  #8192 #6144
+KEEP_RECENT=8192  #4096  #8192 #6144
 MAX_OUT=12288   #12288
 REASON_BUDGET=512
 
@@ -103,6 +103,9 @@ EMB_MODEL_ID=$(curl -s -H "Authorization: Bearer sk-local" http://127.0.0.1:$EMB
   | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
 [ -z "$EMB_MODEL_ID" ] && EMB_MODEL_ID="$EMB_MODEL_FILE"
 
+EMB_MODEL_ID="${EMB_MODEL_ID#/models/}"
+EMB_MODEL_ID="${EMB_MODEL_ID##*/}"
+
 echo "Detected model id: $MODEL_ID"
 echo "Embed model id: $EMB_MODEL_ID"
 
@@ -112,14 +115,32 @@ export OPENAI_API_KEY="sk-local"
 
 echo "Configuring OpenClaw for local OpenAI-compatible server..."
 
-# Chat provider
+set +e
+openclaw gateway stop --force >/dev/null 2>&1
+config_ok=0
+for i in $(seq 1 12); do
+  if openclaw config validate >/dev/null 2>&1; then
+    config_ok=1
+    break
+  fi
+  echo "Config locked or unreadable (Gateway ownership); waiting 10s ($i/12)..."
+  sleep 10
+done
+set -e
+
+if [ "$config_ok" != "1" ]; then
+  echo "ERROR: OpenClaw config still locked after ~2 minutes."
+  exit 1
+fi
+
+openclaw config set models.providers.local \
+  "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
+  --strict-json --replace
+
 openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790","http://localhost:18789"]'
-openclaw config set models.providers.openai.baseUrl "http://127.0.0.1:8080/v1"
-openclaw config set models.providers.openai.apiKey "sk-local"
-openclaw config set agents.defaults.model "openai/${MODEL_ID}"
+openclaw config set agents.defaults.model "local/${MODEL_ID}"
 openclaw config set agents.defaults.timeoutSeconds 1800
 
-# Memory embeddings (Option A — same server)
 openclaw config set memory.search.provider openai-compatible
 openclaw config set memory.search.model "${EMB_MODEL_ID}"
 openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:${EMB_PORT}/v1"
@@ -127,20 +148,12 @@ openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
 
 openclaw config set agents.defaults.bootstrapTotalMaxChars 6000
-openclaw config set agents.defaults.experimental.localModelLean true 
-
-# openclaw config set agents.defaults.compaction.mode safeguard
-openclaw config set agents.defaults.compaction.keepRecentTokens $KEEP_RECENT 
+openclaw config set agents.defaults.experimental.localModelLean true
+openclaw config set agents.defaults.compaction.mode safeguard
+openclaw config set agents.defaults.compaction.keepRecentTokens "$KEEP_RECENT"
 openclaw config set agents.defaults.compaction.notifyUser true
-
 openclaw config set gateway.controlUi.sessionObserver false
 
-openclaw config set models.providers.openai.models \
-  "[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":$CTX_SIZE,\"contextTokens\":$EFFECTIVE_CTX,\"maxTokens\":$MAX_OUT}]" \
-  --strict-json --replace
-
-# 4. Initialize and start OpenClaw
 openclaw --version
 echo "Starting OpenClaw..."
-openclaw gateway run --allow-unconfigured --token "my-secure-password" 
-
+exec openclaw gateway run --allow-unconfigured --token "my-secure-password"
