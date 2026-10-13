@@ -7,11 +7,12 @@ HF_REPO="JonathanColetti/Qwen3.8-27B-Uncensored-GGUF"
 MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
-CTX_SIZE=65536    # 49152
-EFFECTIVE_CTX=38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
+CTX_SIZE=49152    #65536    # 49152
+EFFECTIVE_CTX=36864    #38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
 KEEP_RECENT=8192  #4096  #8192 #6144
 MAX_OUT=12288   #12288
 REASON_BUDGET=512
+N_SLOT=2
 
 # ============================================================
 # Embedding model (small + better)
@@ -51,7 +52,7 @@ unset LD_LIBRARY_PATH
     --host 0.0.0.0 \
     --port 8080 \
     --ctx-size $CTX_SIZE \
-    --parallel 1 \
+    --parallel $N_SLOT \
     --n-predict "$MAX_OUT" \
     --no-reasoning-preserve \
     --reasoning-budget $REASON_BUDGET \
