@@ -7,12 +7,12 @@ HF_REPO="JonathanColetti/Qwen3.8-27B-Uncensored-GGUF"
 MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
-CTX_SIZE=49152    #65536    # 49152
-EFFECTIVE_CTX=36864    #38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
-KEEP_RECENT=8192  #4096  #8192 #6144
-MAX_OUT=12288   #12288
+CTX_SIZE=65536    #65536    # 49152
+EFFECTIVE_CTX=32768    #38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
+KEEP_RECENT=6144  #4096  #8192 #6144
+MAX_OUT=8192   #12288 #20480
 REASON_BUDGET=512
-N_SLOT=2
+N_SLOT=1
 
 # ============================================================
 # Embedding model (small + better)
@@ -149,7 +149,7 @@ openclaw config set memory.search.remote.baseUrl "http://127.0.0.1:${EMB_PORT}/v
 openclaw config set memory.search.remote.apiKey "sk-local"
 openclaw config set memory.search.fallback none
 
-openclaw config set agents.defaults.bootstrapTotalMaxChars 6000
+openclaw config set agents.defaults.bootstrapTotalMaxChars 8000
 openclaw config set agents.defaults.experimental.localModelLean true
 openclaw config set agents.defaults.compaction.mode safeguard
 openclaw config set agents.defaults.compaction.keepRecentTokens "$KEEP_RECENT"
