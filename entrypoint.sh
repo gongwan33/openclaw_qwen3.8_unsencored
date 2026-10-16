@@ -8,11 +8,11 @@ MODEL_FILE="Qwen3.8-27B-Uncensored-Q4_K_M.gguf"
 MODEL_DIR="/models"
 MODEL_PATH="$MODEL_DIR/$MODEL_FILE"
 CTX_SIZE=65536    #65536    # 49152
-EFFECTIVE_CTX=32768    #38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
+EFFECTIVE_CTX=38912    #38912    #36864    #40960  #49152  #20480   #16384   #28672   #32768      # when compaction should kick in
 KEEP_RECENT=6144  #4096  #8192 #6144
-MAX_OUT=8192   #12288 #20480
+MAX_OUT=16384   #12288 #20480
 REASON_BUDGET=512
-N_SLOT=1
+N_SLOT=2
 
 # ============================================================
 # Embedding model (small + better)
