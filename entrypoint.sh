@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+export OPENCLAW_GATEWAY_TOKEN="my-secure-password"
+
 # Model variables (adjust repo name based on your preferred quantizer on HuggingFace)
 # Model variables 
 HF_REPO="JonathanColetti/Qwen3.8-27B-Uncensored-GGUF"
@@ -139,6 +141,7 @@ openclaw config set models.providers.local \
   "{\"baseUrl\":\"http://127.0.0.1:8080/v1\",\"apiKey\":\"sk-local\",\"api\":\"openai-completions\",\"models\":[{\"id\":\"${MODEL_ID}\",\"name\":\"Local Qwen\",\"contextWindow\":${CTX_SIZE},\"contextTokens\":${EFFECTIVE_CTX},\"maxTokens\":${MAX_OUT}}]}" \
   --strict-json --replace
 
+openclaw config set gateway.auth.token '${OPENCLAW_GATEWAY_TOKEN}' # write the string '${xxx}' into the config so it respect the env variable
 openclaw config set gateway.controlUi.allowedOrigins '["http://localhost:18790","http://localhost:18789"]'
 openclaw config set agents.defaults.model "local/${MODEL_ID}"
 openclaw config set agents.defaults.timeoutSeconds 1800
@@ -158,4 +161,4 @@ openclaw config set gateway.controlUi.sessionObserver false
 
 openclaw --version
 echo "Starting OpenClaw..."
-exec openclaw gateway run --allow-unconfigured --token "my-secure-password"
+exec openclaw gateway run --allow-unconfigured --token "${OPENCLAW_GATEWAY_TOKEN}"
